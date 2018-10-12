@@ -15,7 +15,7 @@ library(tidyverse)
 url1 <- "http://www.ndbc.noaa.gov/view_text_file.php?filename=mlrf1h"
 url2 <- ".txt.gz&dir=data/historical/stdmet/"
 
-years <- c(1987:2016)
+years <- c(2012:2017)
 
 urls <- str_c(url1, years, url2, sep = "")
 
@@ -39,20 +39,17 @@ for (i in 1:N){
   # etc etc etc
   
   if(i == 1){
-    MR <- file
-  }
-  else{
-    MR <- rbind.data.frame(MR, file)
-  }
+     MR <- file
+   }
+   else{
+     MR <- rbind.data.frame(MR, file)
+   }
 }
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+new<-MR %>%
+  separate(col = `WDIR WSPD GST`, c("WDIR", "WSPD", "GST")) %>%
+  separate(col = `MWD   PRES`, into = c("MWD", "PRES"))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
