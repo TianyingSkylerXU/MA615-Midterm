@@ -53,6 +53,10 @@ as.character(weather$DATE)
 class(weather$DATE)
 View(x = )
 adjust<-separate(data = weather, col = 'DATE', c("Year","Month","Date"))
+
+adjust$Date<-as.Date(paste(adjust$Year, adjust$Month, adjust$Day, sep='-'))
+
+
 ```
 
 ```{r}
