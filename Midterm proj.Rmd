@@ -48,13 +48,13 @@ for (i in 1:N){
 }
 
 celtics<-read.csv("Celtics.csv")
-weather<-read.csv('Weather_D.csv')
+weather<-read.csv('Weather_Data.csv')
 as.character(weather$DATE)
 class(weather$DATE)
 View(x = )
 adjust<-separate(data = weather, col = 'DATE', c("Year","Month","Date"))
 
-adjust$Date<-as.Date(paste(adjust$Year, adjust$Month, adjust$Day, sep='-'))
+adjust$time<-as.Date(paste(adjust$Year, adjust$Month, adjust$Date, sep='-'))
 
 
 ```
