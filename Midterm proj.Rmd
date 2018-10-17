@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r cars}
 library(tidyverse)
+library(dplyr)
 url1 <- "http://www.ndbc.noaa.gov/view_text_file.php?filename=mlrf1h"
 url2 <- ".txt.gz&dir=data/historical/stdmet/"
 
@@ -45,11 +46,19 @@ for (i in 1:N){
      MR <- rbind.data.frame(MR, file)
    }
 }
+
+celtics<-read.csv("Celtics.csv")
+weather<-read.csv('Weather_D.csv')
+as.character(weather$DATE)
+class(weather$DATE)
+View(x = )
+adjust<-separate(data = weather, col = 'DATE', c("Year","Month","Date"))
 ```
 
 ```{r}
 new<-MR %>%
   separate(col = `WDIR WSPD GST`, c("WDIR", "WSPD", "GST")) %>%
-  separate(col = `MWD   PRES`, into = c("MWD", "PRES"))
+  separate(col = `MWD   PRES`, into = c("MWD", "PRES")) %>%
+  filter(hh == "15")
 ```
 
