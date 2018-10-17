@@ -1,7 +1,7 @@
 #Anaysis
 #Data
 library(stringr)
-Bskt=read.csv("Celtics.csv",header=T)
+Bskt=read.csv("Celtics/Celtics.csv",header=T)
 Date=str_split(string = Bskt$Date2,",")
 Y=c()
 M=c()
@@ -26,9 +26,18 @@ for(i in 1:length(Date)){
   M=c(M,mm)
   D=c(D,Date[[i]][3])
 }
-Bskt$Year=Y
-Bskt$Month=M
-Bskt$Day=D
+Date=str_c(Y,M,D,sep="-")
+Bskt_f=Bskt[,-c(1,2)]
+Bskt_f$Date=Date
+
 
 #Match
-Weather
+Wth=read.csv("Weather/weather_Data.csv",header=T)
+DD=str_split(string = Wth$DATE," ")
+W_Dt=c()
+for(i in 1:length(DD)){
+  A=str_split(DD[[i]][1],"/")
+  d=str_c(A[[1]][1],"-",A[[1]][2],"-",A[[1]][3])
+  W_Dt=c(W_Dt,d)
+}
+Wth$Date_f=W_Dt
