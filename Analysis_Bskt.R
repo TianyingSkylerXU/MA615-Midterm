@@ -1,6 +1,8 @@
 #Anaysis
 #Data
 library(stringr)
+library(dplyr)
+
 Bskt=read.csv("Celtics/Celtics.csv",header=T)
 Date=str_split(string = Bskt$Date2,",")
 Y=c()
@@ -42,8 +44,8 @@ for(i in 1:length(DD)){
 Wth$Date_f=W_Dt
 
 
-#Match
-library(dplyr)
+#Match, clean data
+
 df=left_join(Bskt_f,Wth,by=c("Date"="Date_f"))
 df$feel_like_temp=df$DAILYDeptFromNormalAverageTemp*df$DAILYAverageDryBulbTemp
 for(i in 1:dim(df)[1]){
@@ -61,3 +63,10 @@ for(i in 1:dim(df)[1]){
   }
 }
 
+df$P<-df$ATTD/df$CAP
+
+
+#This is to plot the temperature versus attendance
+
+ggplot(data = df) +
+  geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$P))
