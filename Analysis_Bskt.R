@@ -31,7 +31,6 @@ Bskt_f=Bskt[,-c(1,2)]
 Bskt_f$Date=Date
 
 
-#Match
 Wth=read.csv("Weather/weather_Data.csv",header=T)
 DD=str_split(string = Wth$DATE," ")
 W_Dt=c()
@@ -41,3 +40,10 @@ for(i in 1:length(DD)){
   W_Dt=c(W_Dt,d)
 }
 Wth$Date_f=W_Dt
+
+
+#Match
+library(dplyr)
+Whl_Dt=left_join(Bskt_f,Wth,by=c("Date"="Date_f"))
+
+
