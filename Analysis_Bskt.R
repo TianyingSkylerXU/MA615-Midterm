@@ -44,6 +44,20 @@ Wth$Date_f=W_Dt
 
 #Match
 library(dplyr)
-Whl_Dt=left_join(Bskt_f,Wth,by=c("Date"="Date_f"))
-
+df=left_join(Bskt_f,Wth,by=c("Date"="Date_f"))
+df$feel_like_temp=df$DAILYDeptFromNormalAverageTemp*df$DAILYAverageDryBulbTemp
+for(i in 1:dim(df)[1]){
+  if(is.na(df$DAILYSnowfall[i])){
+    
+  }else if(df$DAILYSnowfall[i]=="T"){
+    df$DAILYSnowfall[i]=0
+  }
+}
+for(i in 1:dim(df)[1]){
+  if(is.na(df$DAILYPrecip[i])){
+    
+  }else if(df$DAILYPrecip[i]=="T"){
+    df$DAILYPrecip[i]=0
+  }
+}
 
