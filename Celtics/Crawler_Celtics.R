@@ -59,4 +59,4 @@ BD=as.data.frame(t(rbind(Date2,ATTD,CAP,Pr)))
 library(dplyr)
 BD_F=BD %>%
   filter(CAP==18624)
-write.csv(BD_F,"Celtics.csv")
+write.csv(BD_F,"Celtics/Celtics.csv")

@@ -19,6 +19,8 @@ for(i in 1:length(Date)){
     mm=3
   }else if(m=="Apr"){
     mm=4
+  }else if(m=="Oct"){
+    mm=10
   }else if(m=="Nov"){
     mm=11
   }else if(m=="Dec"){
@@ -70,3 +72,4 @@ df$P<-df$ATTD/df$CAP
 
 ggplot(data = df) +
   geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$P))
+
