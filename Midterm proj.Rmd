@@ -79,12 +79,14 @@ for(i in 1:dim(df)[1]){
 }
 
 df$P<-df$ATTD/df$CAP
+df$DAILYSnowfall <- as.numeric(df$DAILYSnowfall)
 
 
 #This is to plot the temperature versus attendance
 
 ggplot(data = df) +
-  geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$P))
+  geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$P), size = df$DAILYSnowfall)
+
 
 
 ```
