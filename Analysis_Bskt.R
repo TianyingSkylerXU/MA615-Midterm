@@ -3,10 +3,7 @@
 library(stringr)
 library(dplyr)
 library(ggplot2)
-<<<<<<< HEAD
-=======
 
->>>>>>> 4d980475d8414ec2bc219f4efe62b3c2206b6b57
 Bskt=read.csv("Celtics/Celtics.csv",header=T)
 Date=str_split(string = Bskt$Date2,",")
 Y=c()
@@ -40,6 +37,8 @@ Bskt_f$Date=Date
 
 
 Wth=read.csv("Weather/weather_Data.csv",header=T)
+ddd=as.Date(Wth$Date)
+Wth$Date=ddd
 DD=str_split(string = Wth$DATE," ")
 W_Dt=c()
 for(i in 1:length(DD)){
@@ -91,12 +90,4 @@ ggplot(data = df) +
   geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$DAILYAverageWindSpeed),size=2*df$P)
 
 
-
-
-
-<<<<<<< HEAD
 write.csv(file = "basketdata", x = df)
-=======
-#Shiny
-for(i in 1:)
->>>>>>> 4d980475d8414ec2bc219f4efe62b3c2206b6b57
