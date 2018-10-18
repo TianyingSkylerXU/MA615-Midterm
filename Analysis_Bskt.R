@@ -2,7 +2,7 @@
 #Data
 library(stringr)
 library(dplyr)
-
+library(ggplot2)
 Bskt=read.csv("Celtics/Celtics.csv",header=T)
 Date=str_split(string = Bskt$Date2,",")
 Y=c()
@@ -73,3 +73,4 @@ df$P<-df$ATTD/df$CAP
 ggplot(data = df) +
   geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$P))
 
+write.csv(file = "basketdata", x = df)
