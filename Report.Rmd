@@ -6,11 +6,11 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 ```
 
 I. Data
-For baseball attendance data, we download it from...
+For baseball attendance data, we download it from http://www.espn.com/mlb/team/schedule/_/name/bos.
 For weather data, we download it from NOAA website, the url is https://www.ncdc.noaa.gov/cdo-web/datasets. The data includes a lot of index like temperature, windspeed,snowfall, and it starts at 2012 and ends at 2018.  
 For basketball attendance data, we craw the data from ESPN website, of which the url is:http://www.espn.com/nba/team/schedule/_/name/bos/season/2018. We use rvest package to craw the attendance data through 2012-2013 season to 2017-2018 season. 
 ```{r cars}
@@ -85,9 +85,89 @@ BD_F=BD %>%
 write.csv(BD_F,"Celtics/Celtics.csv")
 ```
 
+b. baseball
+
+```{r}
+library(readxl)
+library(tidyverse)
+
+#inport RedSox data
+coltype <- c("numeric", "text", "text", "text", "text", "text", "text", "numeric", "numeric", "numeric", "text", "numeric", "text", "text", "text", "text", "text", "text", "numeric", "text", "text")
+RedSox_2012 <- read_excel("RedSox/RedSox_2012.xlsx", col_types = coltype)
+RedSox_2012$year <- "2012"
+RedSox_2013 <- read_excel("RedSox/RedSox_2013.xlsx", col_types = coltype)
+RedSox_2013$year <- "2013"
+RedSox_2014 <- read_excel("RedSox/RedSox_2014.xlsx", col_types = coltype)
+RedSox_2014$year <- "2014"
+RedSox_2015 <- read_excel("RedSox/RedSox_2015.xlsx", col_types = coltype)
+RedSox_2015$year <- "2015"
+RedSox_2016 <- read_excel("RedSox/RedSox_2016.xlsx", col_types = coltype)
+RedSox_2016$year <- "2016"
+RedSox_2017 <- read_excel("RedSox/RedSox_2017.xlsx", col_types = coltype)
+RedSox_2017$year <- "2017"
+
+#tidy RedSox date and attendance
+RedSox <- rbind(RedSox_2012, RedSox_2013, RedSox_2014, RedSox_2015, RedSox_2016, RedSox_2017)
+TidyDate <- RedSox$Date %>%
+  str_remove("Monday ") %>%
+  str_remove("Tuesday ") %>%
+  str_remove("Wednesday ") %>%
+  str_remove("Thursday ") %>%
+  str_remove("Friday ") %>%
+  str_remove("Saturday ") %>%
+  str_remove("Sunday ") %>%
+  str_remove(" \\(1\\)") %>%
+  str_remove(" \\(2\\)") %>%
+  paste(RedSox$year)
+RedSox$DATE <- as.Date(TidyDate, format = "%b %d %Y")
+
+RedSox_Tidy <- filter(RedSox, is.na(X__2)) %>%
+  select(DATE, Attendance)
+
+#get canceled games
+RedSoxcg <- RedSox %>%
+  filter(! is.na(`Orig. Scheduled`) & is.na(X__2)) %>%
+  select(`Orig. Scheduled`) %>%
+  mutate(DATE=as.Date(substr(`Orig. Scheduled`, 1, 10)), Attendance=0)
+
+RedSox_Tidy2 <- bind_rows(RedSox, RedSoxcg) %>%
+  filter(is.na(X__2)) %>%
+  select(DATE, Attendance)
+
+#import Weather data
+Weather <- read.csv("Weather/Weather_Data.csv")
+Weather$DATE <- Weather$DATE %>%
+  str_remove(" 23:59") %>%
+  as.Date("%Y/%m/%d")
+Weather$DAILYPrecip_num <- as.numeric(Weather$DAILYPrecip)
+
+
+#join
+RedSox_Join <- RedSox_Tidy %>%
+  left_join(Weather, by = "DATE")
+
+RedSox_Join2 <- RedSox_Tidy2 %>%
+  left_join(Weather, by = "DATE")
+```
+
 
 II. Analysis
 1. Baseball
+a. data
+Wrangled in the I.DATA part.
+
+b. EDA
+```{r}
+ggplot(data = RedSox_Join, mapping = aes(x = DAILYMinimumDryBulbTemp, y = Attendance / max(Attendance))) +
+  geom_point() +
+  geom_smooth(se = FALSE, linetype = "dashed", color = "red")
+
+ggplot(data=RedSox_Join2, mapping=aes(x=DATE, y=Attendance, color=DAILYPrecip_num)) +
+  geom_point()
+
+
+```
+
 
 2. Basketball
 a. data
