@@ -37,8 +37,6 @@ Bskt_f$Date=Date
 
 
 Wth=read.csv("Weather/weather_Data.csv",header=T)
-ddd=as.Date(Wth$Date)
-Wth$Date=ddd
 DD=str_split(string = Wth$DATE," ")
 W_Dt=c()
 for(i in 1:length(DD)){
@@ -52,6 +50,9 @@ Wth$Date_f=W_Dt
 #Match, clean data
 
 df=left_join(Bskt_f,Wth,by=c("Date"="Date_f"))
+ddd=as.Date(df$Date)
+df$Date=ddd
+
 df$feel_like_temp=df$DAILYDeptFromNormalAverageTemp*df$DAILYAverageDryBulbTemp
 for(i in 1:dim(df)[1]){
   if(is.na(df$DAILYSnowfall[i])){
