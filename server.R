@@ -100,7 +100,10 @@ shinyServer(function(input, output) {
       filter(DATE>min(input$dates) & DATE<max(input$dates))
     
     ggplot(data=RedSox_plot, mapping=aes(x=DATE, y=Attendance, color=DAILYPrecip_num)) +
-      geom_point()
+      geom_point() +
+      xlab("Date") +
+      scale_color_continuous(name="Precipitation") +
+      scale_x_date(date_breaks="years", date_labels="%Y")
     
   })
   
