@@ -91,4 +91,4 @@ ggplot(data = df) +
   geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$DAILYAverageWindSpeed),size=2*df$P)
 
 
-write.csv(file = "basketdata", x = df)
+write.csv(file = "basketdata.csv", x = df)
