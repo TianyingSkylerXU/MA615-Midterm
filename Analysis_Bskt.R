@@ -2,6 +2,7 @@
 #Data
 library(stringr)
 library(dplyr)
+library(ggplot2)
 
 Bskt=read.csv("Celtics/Celtics.csv",header=T)
 Date=str_split(string = Bskt$Date2,",")
@@ -70,6 +71,25 @@ df$P<-df$ATTD/df$CAP
 
 #This is to plot the temperature versus attendance
 
+par(mfrow=c(2,2))
+ggplot(data = df,aes(x = df$DAILYAverageDryBulbTemp, y = df$P)) +
+  geom_point()+
+  geom_smooth(method="lm")
 ggplot(data = df) +
-  geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$P))
+  geom_point(aes(x = df$DAILYAverageWindSpeed, y = df$P))
+ggplot(data = df) +
+  geom_point(aes(x = df$DAILYSnowfall, y = df$P))
+ggplot(data = df) +
+  geom_point(aes(x = df$feel_like_temp, y = df$P))
+ggplot(data = df) +
+  geom_point(aes(x = df$DAILYAverageStationPressure, y = df$P))
 
+ggplot(data = df) +
+  geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$DAILYAverageWindSpeed),size=2*df$P)
+
+
+
+
+
+#Shiny
+for(i in 1:)
