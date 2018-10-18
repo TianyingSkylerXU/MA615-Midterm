@@ -1,0 +1,201 @@
+---
+title: "Report"
+author: "Longhao Chen, Xiaolu Zhai,Yudi Mao, Tianying Xu"
+date: "2018.10.18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+I. Data
+For baseball attendance data, we download it from...
+For weather data, we download it from NOAA website, the url is https://www.ncdc.noaa.gov/cdo-web/datasets. The data includes a lot of index like temperature, windspeed,snowfall, and it starts at 2012 and ends at 2018.  
+For basketball attendance data, we craw the data from ESPN website, of which the url is:http://www.espn.com/nba/team/schedule/_/name/bos/season/2018. We use rvest package to craw the attendance data through 2012-2013 season to 2017-2018 season. 
+```{r cars}
+#web crawler of basketball attendance data
+library(xml2)
+library(rvest)
+library(stringr)
+
+#create null vector to record the data
+Date_all=c()
+ATTD=c()
+CAP=c()
+Pr=c()
+
+#get urls
+n1=2013:2018
+sites1=paste0("http://www.espn.com/nba/team/schedule/_/name/bos/season/",n1,"/seasontype/2")
+
+for (i in 1:length(sites1)){
+  web=read_html(sites1[i])
+  
+  Dates=web %>%
+    html_nodes('td[class=\"Table2__td\"] span') %>%
+    html_text()
+  
+  #get Date
+  for(m in 1:length(Dates)){
+    if(grepl(",",Dates[m])==TRUE){
+      MD=str_split(str_split(Dates[m],",")[[1]][2]," ")
+      if(MD[[1]][2]=="Oct"|MD[[1]][2]=="Nov"|MD[[1]][2]=="Dec"){
+        Date_all=c(Date_all,paste0(n1[i]-1,",",MD[[1]][2],",",MD[[1]][3]))
+      }else{
+        Date_all=c(Date_all,paste0(n1[i],",",MD[[1]][2],",",MD[[1]][3]))
+      }
+    }  
+  }
+  
+  #get url for attendance of each game
+  hrefs=web %>%
+    html_nodes('div span[class=\"ml4\"] a') %>%
+    html_attr("href")
+  
+  #get attendance data
+  for(j in 1:length(hrefs)){
+    web1=read_html(hrefs[j])
+    
+    Ns=web1 %>%
+      html_nodes('div[class=\"game-info-note capacity\"]') %>%
+      html_text()
+    
+    Attd=str_split(Ns[1],":")
+    Attd_n=as.numeric(str_c(str_split(Attd[[1]][2],",")[[1]][1],str_split(Attd[[1]][2],",")[[1]][2]))
+    ATTD=c(ATTD,Attd_n)
+    
+    Cap=str_split(Ns[2],":")
+    Cap_n=as.numeric(str_c(str_split(Cap[[1]][2],",")[[1]][1],str_split(Cap[[1]][2],",")[[1]][2]))
+    CAP=c(CAP,Cap_n)
+    
+    p=min(Attd_n/Cap_n,1)
+    Pr=c(Pr,paste0(round(p*100,3),"%"))
+    print(paste0(n1[i],"-",j))
+  }
+}
+
+Date1=Date_all[-which(Date_all=="2013,Apr,16")]
+Date2=Date1[-which(Date1=="2016,Jan,23")]
+BD=as.data.frame(t(rbind(Date2,ATTD,CAP,Pr)))
+
+library(dplyr)
+BD_F=BD %>%
+  filter(CAP==18624)
+write.csv(BD_F,"Celtics/Celtics.csv")
+```
+
+
+II. Analysis
+1. Baseball
+
+2. Basketball
+a. data
+We need to join the weather and basketball data together by date so that we could do EDA.
+```{r}
+library(stringr)
+library(dplyr)
+library(ggplot2)
+
+#Change date format for basketball data
+Bskt=read.csv("Celtics/Celtics.csv",header=T)
+Date=str_split(string = Bskt$Date2,",")
+Y=c()
+M=c()
+D=c()
+for(i in 1:length(Date)){
+  Y=c(Y,Date[[i]][1])
+  m=Date[[i]][2]
+  if(m=="Jan"){
+    mm=1
+  }else if(m=="Feb"){
+    mm=2
+  }else if(m=="Mar"){
+    mm=3
+  }else if(m=="Apr"){
+    mm=4
+  }else if(m=="Oct"){
+    mm=10
+  }else if(m=="Nov"){
+    mm=11
+  }else if(m=="Dec"){
+    mm=12
+  }
+  
+  M=c(M,mm)
+  D=c(D,Date[[i]][3])
+}
+Date=str_c(Y,M,D,sep="-")
+Bskt_f=Bskt[,-c(1,2)]
+Bskt_f$Date=Date
+
+#change date format for weather data
+Wth=read.csv("Weather/weather_Data.csv",header=T)
+DD=str_split(string = Wth$DATE," ")
+W_Dt=c()
+for(i in 1:length(DD)){
+  A=str_split(DD[[i]][1],"/")
+  d=str_c(A[[1]][1],"-",A[[1]][2],"-",A[[1]][3])
+  W_Dt=c(W_Dt,d)
+}
+Wth$Date_f=W_Dt
+
+#Join two data set together and clean data
+df=left_join(Bskt_f,Wth,by=c("Date"="Date_f"))
+ddd=as.Date(df$Date)
+df$Date=ddd
+df$feel_like_temp=df$DAILYDeptFromNormalAverageTemp*df$DAILYAverageDryBulbTemp
+for(i in 1:dim(df)[1]){
+  if(is.na(df$DAILYSnowfall[i])){
+    
+  }else if(df$DAILYSnowfall[i]=="T"){
+    df$DAILYSnowfall[i]=0
+  }
+}
+for(i in 1:dim(df)[1]){
+  if(is.na(df$DAILYPrecip[i])){
+    
+  }else if(df$DAILYPrecip[i]=="T"){
+    df$DAILYPrecip[i]=0
+  }
+}
+df$P<-df$ATTD/df$CAP
+```
+
+b. EDA
+For weather data, we choose daily average normal temperature, daily average wind speed, daily average snow fall, daily average 
+
+At first we plot avergae attendance through each season. 
+```{r}
+library(ggplot2)
+library(dplyr)
+#data
+p=c()
+for(i in 2013:2018){
+  dfdf=df %>% filter( Date>as.Date(paste0(i-1,"-7-1")) & Date<as.Date(paste0(i,"-6-30")) )
+  pp=round(mean(dfdf$P),3)  
+  p=c(p,pp)
+}
+y=c()
+for(i in 2012:2017){
+  y=c(y,paste0(i,"-",i+1))
+}
+
+ggplot(as.data.frame(t(rbind(y,p))),mapping=aes(y,p))+
+      geom_bar(stat="identity",fill="grey")+
+      labs(x="season",y="Attendance(%)",title="Attendance versus Seasons")+
+      geom_text(aes(label=p))+
+      theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+
+
+
+
+
+
+
+
+
