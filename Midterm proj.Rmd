@@ -13,10 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r cars}
 library(tidyverse)
 library(dplyr)
-#Anaysis
-#Data
-library(stringr)
-library(dplyr)
 
 Bskt=read.csv("Celtics/Celtics.csv",header=T)
 Date=str_split(string = Bskt$Date2,",")
@@ -80,14 +76,19 @@ for(i in 1:dim(df)[1]){
 
 df$P<-df$ATTD/df$CAP
 df$DAILYSnowfall <- as.numeric(df$DAILYSnowfall)
-
+View(df)
 
 #This is to plot the temperature versus attendance
 
 ggplot(data = df) +
-  geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$P), size = df$DAILYSnowfall)
+  geom_point(aes(x = df$DAILYAverageDryBulbTemp, y = df$P))
 
+ggplot(data = df) +
+  geom_point(aes(x = df$feel_like_temp, y = df$P))
 
+ggplot(data = df) +
+  geom_point(aes(x=1:245, y = df$P)) +
+  xlab("matches from 2012 to 2017") + ylab("attendence rate")
 
 ```
 
