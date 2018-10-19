@@ -258,9 +258,9 @@ for (i in 2012:2017) {
 }
 
 numericp <- (c(1, 0.972, .945, .981, .996, 1))
+youknow <- cbind(y,numericp)
 
-
-ggplot(youknow, mapping = aes(y, numericp)) +
+ggplot(, mapping = aes(y, numericp)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   labs(x = "Season", y = "Attendance(%)", title = "Attendance versus Seasons") +
   geom_text(aes(label = numericp)) +
