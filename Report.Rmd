@@ -242,6 +242,8 @@ b. EDA
 For weather data, we choose daily average normal temperature, daily average wind speed, daily average snow fall.
 
 First we plot average attendance through each season. 
+
+
 ```{r}
 library(ggplot2)
 library(dplyr)
@@ -258,30 +260,37 @@ for (i in 2012:2017) {
 }
 
 numericp <- (c(1, 0.972, .945, .981, .996, 1))
-youknow <- cbind(y,numericp)
+youknow <- as.data.frame(cbind(y,numericp))
 
-ggplot(, mapping = aes(y, numericp)) +
+ggplot(youknow, mapping = aes(y, numericp)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   labs(x = "Season", y = "Attendance(%)", title = "Attendance versus Seasons") +
   geom_text(aes(label = numericp)) +
   theme(plot.title = element_text(hjust = 0.5))
+
+
 ```
 
 
 Then we plot attendance versus every weather variable to see the association between attendance and weather.
+
 ```{r}
 library(ggplot2)
 ggplot(df, mapping = aes(DAILYAverageDryBulbTemp, P)) +
-  geom_point(colour = "royalblue3", shape = 16)
+  geom_point(colour = "royalblue3", shape = 16) +
+  ylab("Attendence rate") + xlab("Daily Average Temp")
 ggplot(df, mapping = aes(DAILYAverageWindSpeed, P)) +
-  geom_point(colour = "royalblue3", shape = 16)
+  geom_point(colour = "royalblue3", shape = 16) +
+  ylab("Attendence rate") + xlab("Daily Average Windspeed")
 ggplot(df, mapping = aes(DAILYSnowfall, P)) +
-  geom_point(colour = "royalblue3", shape = 16)
+  geom_point(colour = "royalblue3", shape = 16) +
+  ylab("Attendence rate") + xlab("Daily Snow Fall")
 ```
 
 From the plots above, we could see that whatever the weather situation is, the attendance could still be high or low, there seems no correlation between weather situation and basketball attendance.
 
 Finally we try to plot attendance versus two variables to see if there is interaction effects.
+
 ```{r}
 library(ggplot2)
 ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAverageWindSpeed)) +
@@ -289,13 +298,11 @@ ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAvera
 ggplot(df, mapping = aes(x = DAILYSnowfall, y = P, colour = DAILYAverageWindSpeed)) +
   geom_point(shape = 16)+ylab("Attendence rate") + xlab("Daily Snow Fall")
 ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAverageWindSpeed, size = DAILYSnowfall)) + 
-  geom_point(shape = 16)
+  geom_point(shape = 16) +
+  ylab("Attendence rate") + xlab("Daily Average Temp")
 ```
 
-These three plots do not show any pattern and association of weather situation and attendance. In the final plot, most points with bigger size and lighter color, which means the snow is heavy and the wind speed is fast, are still correspond to the 100% attendance, which is not make sense. Thus weather situation and attendance are not correlated.
-
-
-
+These three plots do not show any pattern and association of weather situation and attendance. In the final plot, most points with bigger size and lighter color, which means the snow is heavy and the wind speed is fast, are still correspond to the 100% attendance. This does not make sense. Therefore weather is not highly associated with attendance rate.
 
 
 
