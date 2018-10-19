@@ -91,7 +91,7 @@ b. baseball
 library(readxl)
 library(tidyverse)
 
-#inport RedSox data
+# inport RedSox data
 coltype <- c("numeric", "text", "text", "text", "text", "text", "text", "numeric", "numeric", "numeric", "text", "numeric", "text", "text", "text", "text", "text", "text", "numeric", "text", "text")
 RedSox_2012 <- read_excel("RedSox/RedSox_2012.xlsx", col_types = coltype)
 RedSox_2012$year <- "2012"
@@ -106,7 +106,7 @@ RedSox_2016$year <- "2016"
 RedSox_2017 <- read_excel("RedSox/RedSox_2017.xlsx", col_types = coltype)
 RedSox_2017$year <- "2017"
 
-#tidy RedSox date and attendance
+# tidy RedSox date and attendance
 RedSox <- rbind(RedSox_2012, RedSox_2013, RedSox_2014, RedSox_2015, RedSox_2016, RedSox_2017)
 TidyDate <- RedSox$Date %>%
   str_remove("Monday ") %>%
@@ -124,17 +124,17 @@ RedSox$DATE <- as.Date(TidyDate, format = "%b %d %Y")
 RedSox_Tidy <- filter(RedSox, is.na(X__2)) %>%
   select(DATE, Attendance)
 
-#get canceled games
+# get canceled games
 RedSoxcg <- RedSox %>%
-  filter(! is.na(`Orig. Scheduled`) & is.na(X__2)) %>%
+  filter(!is.na(`Orig. Scheduled`) & is.na(X__2)) %>%
   select(`Orig. Scheduled`) %>%
-  mutate(DATE=as.Date(substr(`Orig. Scheduled`, 1, 10)), Attendance=0)
+  mutate(DATE = as.Date(substr(`Orig. Scheduled`, 1, 10)), Attendance = 0)
 
 RedSox_Tidy2 <- bind_rows(RedSox, RedSoxcg) %>%
   filter(is.na(X__2)) %>%
   select(DATE, Attendance)
 
-#import Weather data
+# import Weather data
 Weather <- read.csv("Weather/Weather_Data.csv")
 Weather$DATE <- Weather$DATE %>%
   str_remove(" 23:59") %>%
@@ -142,7 +142,7 @@ Weather$DATE <- Weather$DATE %>%
 Weather$DAILYPrecip_num <- as.numeric(Weather$DAILYPrecip)
 
 
-#join
+# join
 RedSox_Join <- RedSox_Tidy %>%
   left_join(Weather, by = "DATE")
 
@@ -162,10 +162,8 @@ ggplot(data = RedSox_Join, mapping = aes(x = DAILYMinimumDryBulbTemp, y = Attend
   geom_point() +
   geom_smooth(se = FALSE, linetype = "dashed", color = "red")
 
-ggplot(data=RedSox_Join2, mapping=aes(x=DATE, y=Attendance, color=DAILYPrecip_num)) +
+ggplot(data = RedSox_Join2, mapping = aes(x = DATE, y = Attendance, color = DAILYPrecip_num)) +
   geom_point()
-
-
 ```
 
 
@@ -243,59 +241,61 @@ df$P <- df$ATTD / df$CAP
 ```
 
 b. EDA
-For weather data, we choose daily average normal temperature, daily average wind speed, daily average snow fall and feel-like temperature as weather variables.
+For weather data, we choose daily average normal temperature, daily average wind speed, daily average snow fall.
 
-At first we plot average attendance through each season. 
+First we plot average attendance through each season. 
 ```{r}
 library(ggplot2)
 library(dplyr)
-#data
-p=c()
-for(i in 2013:2018){
-  dfdf=df %>% filter( Date>as.Date(paste0(i-1,"-7-1")) & Date<as.Date(paste0(i,"-6-30")) )
-  pp=round(mean(dfdf$P),3)  
-  p=c(p,pp)
+# data
+p <- c()
+for (i in 2013:2018) {
+  dfdf <- df %>% filter(Date > as.Date(paste0(i - 1, "-7-1")) & Date < as.Date(paste0(i, "-6-30")))
+  pp <- round(mean(dfdf$P), 3)
+  p <- c(p, pp)
 }
-y=c()
-for(i in 2012:2017){
-  y=c(y,paste0(i,"-",i+1))
+y <- c()
+for (i in 2012:2017) {
+  y <- c(y, paste0(i, "-", i + 1))
 }
 
-ggplot(as.data.frame(t(rbind(y,p))),mapping=aes(y,p))+
-      geom_bar(stat="identity",fill="skyblue")+
-      labs(x="season",y="Attendance(%)",title="Attendance versus Seasons")+
-      geom_text(aes(label=p))+
-      theme(plot.title = element_text(hjust = 0.5))
+numericp <- (c(1, 0.972, .945, .981, .996, 1))
+
+
+ggplot(youknow, mapping = aes(y, numericp)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(x = "Season", y = "Attendance(%)", title = "Attendance versus Seasons") +
+  geom_text(aes(label = numericp)) +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
 Then we plot attendance versus every weather variable to see the association between attendance and weather.
 ```{r}
 library(ggplot2)
-ggplot(df,mapping=aes(DAILYAverageDryBulbTemp,P))+
-  geom_point(colour="royalblue3",shape=16)
-ggplot(df,mapping=aes(DAILYAverageWindSpeed,P))+
-  geom_point(colour="royalblue3",shape=16)
-ggplot(df,mapping=aes(df$DAILYSnowfall,P))+
-  geom_point(colour="royalblue3",shape=16)
-ggplot(df,mapping=aes(df$feel_like_temp,P))+
-  geom_point(colour="royalblue3",shape=16)
+ggplot(df, mapping = aes(DAILYAverageDryBulbTemp, P)) +
+  geom_point(colour = "royalblue3", shape = 16)
+ggplot(df, mapping = aes(DAILYAverageWindSpeed, P)) +
+  geom_point(colour = "royalblue3", shape = 16)
+ggplot(df, mapping = aes(DAILYSnowfall, P)) +
+  geom_point(colour = "royalblue3", shape = 16)
 ```
 
-From the plots above, we could see that whatever the weather situation is, the attendance could still be high or low, there seems no correlation between weathr situation and basketball attendance.
+From the plots above, we could see that whatever the weather situation is, the attendance could still be high or low, there seems no correlation between weather situation and basketball attendance.
 
 Finally we try to plot attendance versus two variables to see if there is interaction effects.
 ```{r}
 library(ggplot2)
-ggplot(df,mapping=aes(x=DAILYAverageDryBulbTemp,y=P,colour=DAILYAverageWindSpeed))+
-  geom_point(shape=16)
-ggplot(df,mapping=aes(x=DAILYSnowfall,y=P,colour=DAILYAverageWindSpeed))+
-  geom_point(shape=16)
-ggplot(df,mapping=aes(x=DAILYAverageDryBulbTemp,y=P,colour=DAILYAverageWindSpeed,size=DAILYSnowfall))+
-  geom_point(shape=16)
+ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAverageWindSpeed)) +
+  geom_point(shape = 16) + ylab("Attendence rate") + xlab("Daily Average Temperature")
+ggplot(df, mapping = aes(x = DAILYSnowfall, y = P, colour = DAILYAverageWindSpeed)) +
+  geom_point(shape = 16)+ylab("Attendence rate") + xlab("Daily Snow Fall")
+ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAverageWindSpeed, size = DAILYSnowfall)) + 
+  geom_point(shape = 16)
 ```
 
 These three plots do not show any pattern and association of weather situation and attendance. In the final plot, most points with bigger size and lighter color, which means the snow is heavy and the wind speed is fast, are still correspond to the 100% attendance, which is not make sense. Thus weather situation and attendance are not correlated.
+
 
 
 
