@@ -1,22 +1,23 @@
 ---
-title: "Report"
-author: "Longhao Chen, Xiaolu Zhai,Yudi Mao, Tianying Xu"
+title: "Midterm Project"
+author: "Longhao Chen, Angela Zhai,Yudi Mao, Tianying Xu"
 date: "2018.10.18"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+pacman::p_load(readxl, tidyverse, stringr)
 ```
 
-I. Data
+#I. Data
 
 For baseball attendance data, we download it from http://www.espn.com/mlb/team/schedule/_/name/bos.
 
 For weather data, we download it from NOAA website, the url is https://www.ncdc.noaa.gov/cdo-web/datasets. The data includes a lot of index like temperature, windspeed,snowfall, and it starts at 2012 and ends at 2018.  
 
 For basketball attendance data, we get the data from ESPN website using web crawler, with the url http://www.espn.com/nba/team/schedule/_/name/bos/season/2018. We use rvest package to craw the attendance data through 2012-2013 season to 2017-2018 season. 
-```{r cars}
+```{r cars, echo=FALSE}
 # web crawler of basketball attendance data
 #library(xml2)
 #library(rvest)
@@ -87,10 +88,7 @@ For basketball attendance data, we get the data from ESPN website using web craw
 ```
 
 
-```{r}
-library(readxl)
-library(tidyverse)
-
+```{r echo=FALSE}
 # inport RedSox data
 coltype <- c("numeric", "text", "text", "text", "text", "text", "text", "numeric", "numeric", "numeric", "text", "numeric", "text", "text", "text", "text", "text", "text", "numeric", "text", "text")
 RedSox_2012 <- read_excel("RedSox/RedSox_2012.xlsx", col_types = coltype)
@@ -151,33 +149,35 @@ RedSox_Join2 <- RedSox_Tidy2 %>%
 ```
 
 
-II. Analysis
-1. Baseball
-a. data
+#II. Analysis
+##1. Baseball
+###a. data
 Wrangled in the I.DATA part. We transform date in both redsox attendance and weather using as.Date, and join these two parts with the DATE as the key.
 
-b. EDA
+###b. EDA
 
 We can roughly conclude that low temperature has relationship with low attendance, while high temperature vice versa. 
 
-```{r}
+```{r echo=FALSE}
 ggplot(data = RedSox_Join, mapping = aes(x = DAILYMinimumDryBulbTemp, y = Attendance / max(Attendance))) +
   geom_point() +
-  geom_smooth(se = FALSE, linetype = "dashed", color = "red")
+  geom_smooth(se = FALSE, linetype = "dashed", color = "red") +
+  xlab("Daily Minimum Dry Bulb Temperature")
+
+
 
 ggplot(data = RedSox_Join2, mapping = aes(x = DATE, y = Attendance, color = DAILYPrecip_num)) +
-  geom_point()
+  geom_point() +
+  xlab("Date") +
+  scale_color_continuous(name="Precipitation") +
+  scale_x_date(date_breaks="years", date_labels="%Y")
 ```
 
 
-2. Basketball
-a. data
+##2. Basketball
+###a. data
 We need to join the weather and basketball data together by date so that we could do EDA. We first translate the date of basketball and weather to the same format and join them, then clean data. (There are "T" in the value of index that means the number is too small to measure, thus we translate these values to be 0.)
-```{r}
-library(stringr)
-library(dplyr)
-library(ggplot2)
-
+```{r echo=FALSE}
 # Change date format for basketball data
 Bskt <- read.csv("Celtics/Celtics.csv", header = T)
 Date <- str_split(string = Bskt$Date2, ",")
@@ -243,15 +243,13 @@ for (i in 1:dim(df)[1]) {
 df$P <- df$ATTD / df$CAP
 ```
 
-b. EDA
+###b. EDA
 For weather data, we choose daily average normal temperature, daily average wind speed, daily average snow fall.
 
 First we plot average attendance through each season. 
 
 
-```{r}
-library(ggplot2)
-library(dplyr)
+```{r echo=FALSE}
 # data
 p <- c()
 for (i in 2013:2018) {
@@ -279,8 +277,7 @@ ggplot(youknow, mapping = aes(y, numericp)) +
 
 Then we plot attendance versus every weather variable to see the association between attendance and weather.
 
-```{r}
-library(ggplot2)
+```{r echo=FALSE, warning=FALSE}
 ggplot(df, mapping = aes(DAILYAverageDryBulbTemp, P)) +
   geom_point(colour = "royalblue3", shape = 16) +
   ylab("Attendence rate") + xlab("Daily Average Temp")
@@ -289,19 +286,20 @@ ggplot(df, mapping = aes(DAILYAverageWindSpeed, P)) +
   ylab("Attendence rate") + xlab("Daily Average Windspeed")
 ggplot(df, mapping = aes(DAILYSnowfall, P)) +
   geom_point(colour = "royalblue3", shape = 16) +
-  ylab("Attendence rate") + xlab("Daily Snow Fall")
+  ylab("Attendence rate") + xlab("Daily Snow Fall") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 From the plots above, we could see that whatever the weather situation is, the attendance could still be high or low, there seems no correlation between weather situation and basketball attendance.
 
 Finally we try to plot attendance versus two variables to see if there is interaction effects.
 
-```{r}
-library(ggplot2)
+```{r echo=FALSE, warning=FALSE}
 ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAverageWindSpeed)) +
   geom_point(shape = 16) + ylab("Attendence rate") + xlab("Daily Average Temperature")
 ggplot(df, mapping = aes(x = DAILYSnowfall, y = P, colour = DAILYAverageWindSpeed)) +
-  geom_point(shape = 16)+ylab("Attendence rate") + xlab("Daily Snow Fall")
+  geom_point(shape = 16)+ylab("Attendence rate") + xlab("Daily Snow Fall") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAverageWindSpeed, size = DAILYSnowfall)) + 
   geom_point(shape = 16) +
   ylab("Attendence rate") + xlab("Daily Average Temp")
