@@ -305,8 +305,3 @@ ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAvera
 These three plots do not show any pattern and association of weather situation and attendance. In the final plot, most points with bigger size and lighter color, which means the snow is heavy and the wind speed is fast, are still correspond to the 100% attendance. This does not make sense. Therefore weather is not highly associated with attendance rate.
 
 
-
-
-
-
-
