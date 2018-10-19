@@ -307,7 +307,30 @@ ggplot(df, mapping = aes(x = DAILYAverageDryBulbTemp, y = P, colour = DAILYAvera
 
 These three plots do not show any pattern and association of weather situation and attendance. In the final plot, most points with bigger size and lighter color, which means the snow is heavy and the wind speed is fast, are still correspond to the 100% attendance. This does not make sense. Therefore weather is not highly associated with attendance rate.
 
-However, if we zoom in to a specific season of basketball matches, there might be some interesting things between weather and attendence. In the following, we will look at the 2014 to 2015 seasons. It can shown that the smooth line running cross the graph does not follow any specific pattern.
+However, if we zoom in to a specific season of basketball matches, there might be some interesting things between weather and attendence. In the following, we will look at the 2013 to 2014 and 2014 to 2015 seasons. It can shown that the smooth line running cross the graph does not follow any specific pattern.
+
+2013-2014 Season
+
+```{r}
+df_1314 <- df %>% filter(Date > as.Date(paste0(2013, "-7-1")) & Date < as.Date(paste0(2014, "-6-30")))
+ggplot(df_1314, mapping = aes(DAILYAverageDryBulbTemp, P)) +
+  geom_point(colour = "royalblue3", shape = 16) +
+  geom_smooth(colour = "royalblue3")+
+  ylab("Attendence rate") + xlab("Daily Average Temp")
+ggplot(df_1314, mapping = aes(DAILYAverageWindSpeed, P)) +
+  geom_point(colour = "royalblue3", shape = 16) +
+  geom_smooth(colour = "royalblue3") +
+  ylab("Attendence rate") + xlab("Daily Average Windspeed")
+ggplot(df, mapping = aes(DAILYSnowfall, P)) +
+  geom_point(colour = "royalblue3", shape = 16) +
+  geom_smooth(colour = "royalblue3") +
+  ylab("Attendence rate") + xlab("Daily Snow Fall") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+2014-2015 Season
 
 ```{r}
 seasons1 <- df[82:122, ]
