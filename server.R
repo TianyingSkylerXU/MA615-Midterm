@@ -36,7 +36,7 @@ shinyServer(function(input, output) {
       z <- "Date of Matches in order"
     }
     ggplot(data = a, aes(x = i, y = a$P)) +
-      geom_jitter() +
+      geom_jitter(alpha = 0.4) +
       ylab("Attendence rate") + xlab(z)
   })
   
@@ -108,22 +108,26 @@ shinyServer(function(input, output) {
   })
   
   output$RedSoxPlot <- renderPlot({
-    if (input$Temperature == "DAILYMaximumDryBulbTemp") {
+    if (input$Temperature == "Daily Maximum Temperature") {
       i <- RedSox_Join$DAILYMaximumDryBulbTemp
+      m <- "Daily Maximum Temperature in Fahrenheit"
     }
-    if (input$Temperature == "DAILYMinimumDryBulbTemp") {
+    if (input$Temperature == "Daily Minimum Temperature") {
       i <- RedSox_Join$DAILYMinimumDryBulbTemp
+      m <- "Daily Minimum Temperature in Fahrenheit"
     }
-    if (input$Temperature == "DAILYAverageDryBulbTemp") {
+    if (input$Temperature == "Daily Average Temperature") {
       i <- RedSox_Join$DAILYAverageDryBulbTemp
+      m <- "Daily Average Temperature in Fahrenheit"
     }
-    if (input$Temperature == "DAILYAverageWindSpeed") {
+    if (input$Temperature == "Daily Average Windspeed") {
       i <- RedSox_Join$DAILYAverageWindSpeed
+      m <- "Daily Average Windspeed in mile/hour"
     }
     
     ggplot(data = RedSox_Join, mapping = aes(x = i, y = Attendance / max(Attendance))) +
-      geom_point() +
-      geom_smooth(se = FALSE, linetype = "dashed", color = "red")
+      geom_point(alpha = 0.4) +
+      geom_smooth(se = FALSE, linetype = "dashed", color = "red") + xlab(m)
     
   })
 })

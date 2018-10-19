@@ -29,7 +29,7 @@ shinyUI(
       titlePanel("RedSox attendance against weather"),
       sidebarPanel(
         selectInput("Temperature", "Please Select Weather factors", 
-                    choices = c("DAILYMaximumDryBulbTemp", "DAILYMinimumDryBulbTemp", "DAILYAverageDryBulbTemp", "DAILYAverageWindSpeed"))
+                    choices = c("Daily Maximum Temperature", "Daily Minimum Temperature", "Daily Average Temperature", "Daily Average Windspeed"))
       ),
       mainPanel(
         plotOutput("RedSoxPlot")
